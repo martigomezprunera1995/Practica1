@@ -28,12 +28,20 @@ namespace Cube {
 	void drawCube();
 }
 
+namespace MyFirstShader {
+	void myInitCode(void);
+	GLuint myShaderCompile(void);
 
+	void myCleanupCode(void);
+	void myrendererCode(double currentTime);
 
-
+	GLuint myRenderProgram;
+	GLuint myVAO;
+}
 
 
 ////////////////
+
 
 namespace RenderVars {
 	const float FOV = glm::radians(65.f);
@@ -139,6 +147,14 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 
+	float r, g, b, alfa;
+	alfa = 1.0f;
+	r = ((float)sin(1.0f*currentTime))*0.5f+0.5f;
+	g = (float)cos(1.0f*currentTime)*0.5f + 0.5f;
+	b = (float)sin(1.0f*currentTime)*0.5f + 0.5f;
+
+	const GLfloat red[] = { r, g, b, 1.0f };
+	glClearBufferfv(GL_COLOR, 0, red);
 
 
 	ImGui::Render();
@@ -984,6 +1000,79 @@ void main() {\n\
 		glUseProgram(0);
 		glBindVertexArray(0);
 		glDisable(GL_PRIMITIVE_RESTART);
+	}
+
+
+}
+
+//////////////////////// MY FIRST SHADER ///////////////
+namespace MyFirstShader {
+	//1. define shaders
+
+	static const GLchar * vertex_shader_source[] = 
+	{
+		"#version 330\n\
+		\n\
+		void main(){\n\
+		gl_Position = vec4(0.0, 0.0, 0.5, 1.0f);\n\
+		}\n\
+		"
+	};
+
+	static const GLchar * fragment_shader_source[] =
+	{
+		"#version 330\n\
+		\n\
+		void main(){\n\
+		gl_Color = vec4(0.0, 0.8, 1.0, 1.0);\n\
+		}\n\
+		"
+	};
+
+	//2. compile and link shaders
+	GLuint myShaderCompile(void)
+	{
+		GLuint vertex_shader;
+		GLuint fragment_shader;
+		GLuint program;
+
+		vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+		glCompileShader(vertex_shader);
+
+		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+		glCompileShader(fragment_shader);
+
+		program = glCreateProgram();
+		glAttachShader(program, vertex_shader);
+		glAttachShader(program, fragment_shader);
+		glLinkProgram(program);
+
+		glDeleteShader(vertex_shader);
+		glDeleteShader(fragment_shader);
+
+		return program;
+
+	}
+
+
+	//3. init my rendering
+	void myInitCode(void) {
+
+
+	}
+
+	//4. cleanup
+	void myCleanupCode(void) {
+
+
+	}
+
+	//5. myrendererCode(double CurrentTime)
+	void myrendererCode(double CurrentTime) {
+
+
 	}
 
 
