@@ -97,12 +97,6 @@ void GLmousecb(MouseEvent ev) {
 			break;
 		case MouseEvent::Button::Middle: // MOVE Z
 			RV::panv[2] += diffy * 0.05f;
-
-			//ZOOM
-			glPushMatrix();
-			glScalef(1, 1, 1);
-			glPopMatrix();
-
 			break;
 		default: break;
 		}
