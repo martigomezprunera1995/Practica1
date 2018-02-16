@@ -21,6 +21,15 @@ void cleanupAxis();
 void drawAxis();
 }
 
+//Esfera
+namespace Sphere {
+	void setupSphere(glm::vec3 pos, float radius);
+	void cleanupSphere();
+	void updateSphere(glm::vec3 pos, float radius);
+	void drawSphere();
+}
+
+
 namespace Cube {
 	void setupCube();
 	void cleanupCube();
@@ -37,6 +46,8 @@ namespace MyFirstShader {
 
 	GLuint myRenderProgram;
 	GLuint myVAO;
+
+
 }
 
 
@@ -86,6 +97,12 @@ void GLmousecb(MouseEvent ev) {
 			break;
 		case MouseEvent::Button::Middle: // MOVE Z
 			RV::panv[2] += diffy * 0.05f;
+
+			//ZOOM
+			glPushMatrix();
+			glScalef(1, 1, 1);
+			glPopMatrix();
+
 			break;
 		default: break;
 		}
@@ -112,7 +129,18 @@ void GLinit(int width, int height) {
 	Axis::setupAxis();
 	Cube::setupCube();*/
 
-	MyFirstShader::myInitCode();
+	//MyFirstShader::myInitCode();
+
+	//Cubo
+	Cube::setupCube();
+
+	//Esfera
+	Sphere::setupSphere(glm::vec3(4, 4, 0), 1);
+
+	/*glPushMatrix(); 
+	glScalef(1, 1, 1); 
+	drawObject(); 
+	glPopMatrix(); */
 }
 
 void GLcleanup() {
@@ -121,8 +149,13 @@ void GLcleanup() {
 	Cube::cleanupCube();
 */
 	
-	MyFirstShader::myCleanupCode();
+	//MyFirstShader::myCleanupCode();
 
+	//Cubo
+	Cube::cleanupCube();
+
+	//Esfera
+	Sphere::cleanupSphere();
 }
 
 void GLrender(double currentTime) {
@@ -149,7 +182,15 @@ void GLrender(double currentTime) {
 	const GLfloat red[] = { r, g, b, 1.0f };
 	glClearBufferfv(GL_COLOR, 0, red);*/
 
-	MyFirstShader::myrendererCode(currentTime);
+	//MyFirstShader::myrendererCode(currentTime);
+
+	//Cubo
+	Cube::drawCube();
+
+	//Esfera
+	Sphere::drawSphere();
+
+	//Render
 	ImGui::Render();
 }
 
@@ -1007,7 +1048,10 @@ namespace MyFirstShader {
 		"#version 330\n\
 		\n\
 		void main(){\n\
-		gl_Position = vec4(0.0, 0.0, 0.5, 1.0f);\n\
+		const vec4 vertices[3] = vec4[3](vec4(0.25, -0.25, 0.5, 1.0),\n\
+										vec4(0.25, 0.25, 0.5, 1.0),\n\
+										vec4(-0.25, -0.25, 0.5, 1.0));\n\
+		gl_Position = vertices[gl_VertexID];\n\
 		}\n\
 		"
 	};
@@ -1082,7 +1126,9 @@ namespace MyFirstShader {
 
 		glUseProgram(myRenderProgram);
 		glPointSize(40.0f);
-		glDrawArrays(GL_POINTS, 0, 1);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
 
 	}
 
