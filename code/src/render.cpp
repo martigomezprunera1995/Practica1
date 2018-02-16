@@ -112,15 +112,7 @@ void GLinit(int width, int height) {
 	Axis::setupAxis();
 	Cube::setupCube();*/
 
-
-
-
-
-
-
-
-
-
+	MyFirstShader::myInitCode();
 }
 
 void GLcleanup() {
@@ -128,7 +120,8 @@ void GLcleanup() {
 	Axis::cleanupAxis();
 	Cube::cleanupCube();
 */
-
+	
+	MyFirstShader::myCleanupCode();
 
 }
 
@@ -147,16 +140,16 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 
-	float r, g, b, alfa;
+	/*float r, g, b, alfa;
 	alfa = 1.0f;
 	r = ((float)sin(1.0f*currentTime))*0.5f+0.5f;
 	g = (float)cos(1.0f*currentTime)*0.5f + 0.5f;
 	b = (float)sin(1.0f*currentTime)*0.5f + 0.5f;
 
 	const GLfloat red[] = { r, g, b, 1.0f };
-	glClearBufferfv(GL_COLOR, 0, red);
+	glClearBufferfv(GL_COLOR, 0, red);*/
 
-
+	MyFirstShader::myrendererCode(currentTime);
 	ImGui::Render();
 }
 
@@ -1023,8 +1016,10 @@ namespace MyFirstShader {
 	{
 		"#version 330\n\
 		\n\
+		out vec4 color; \n\
+		\n\
 		void main(){\n\
-		gl_Color = vec4(0.0, 0.8, 1.0, 1.0);\n\
+		color = vec4(0.0, 0.8, 1.0, 1.0);\n\
 		}\n\
 		"
 	};
@@ -1060,18 +1055,34 @@ namespace MyFirstShader {
 	//3. init my rendering
 	void myInitCode(void) {
 
+		myRenderProgram = myShaderCompile();
+		glCreateVertexArrays(1, &myVAO);
+		glBindVertexArray(myVAO);
 
 	}
 
 	//4. cleanup
 	void myCleanupCode(void) {
 
-
+		glDeleteVertexArrays(1, &myVAO);
+		glDeleteProgram(myRenderProgram);
 	}
 
 	//5. myrendererCode(double CurrentTime)
 	void myrendererCode(double CurrentTime) {
 
+		float r, g, b, alfa;
+		alfa = 1.0f;
+		r = ((float)sin(1.0f*CurrentTime))*0.5f + 0.5f;
+		g = (float)cos(1.0f*CurrentTime)*0.5f + 0.5f;
+		b = (float)sin(1.0f*CurrentTime)*0.5f + 0.5f;
+
+		const GLfloat red[] = { r, g, b, 1.0f };
+		glClearBufferfv(GL_COLOR, 0, red);
+
+		glUseProgram(myRenderProgram);
+		glPointSize(40.0f);
+		glDrawArrays(GL_POINTS, 0, 1);
 
 	}
 
